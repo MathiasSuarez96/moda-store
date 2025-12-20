@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  nombre    String
+  rol       Rol      @default(CLIENTE)
+  createdAt DateTime @default(now())
+  ordenes   Orden[]
+}
+
+enum Rol {
+  CLIENTE
+  ADMIN
+}
+
+model Categoria {
+  id        Int        @id @default(autoincrement())
+  nombre    String     @unique
+  productos Producto[]
+}
+
+model Producto {
+  id          Int         @id @default(autoincrement())
+  nombre      String
+  descripcion String
+  precio      Float
+  imagen      String
+  stock       Int         @default(0)
+  categoriaId Int
+  categoria   Categoria   @relation(fields: [categoriaId], references: [id])
+  talles      Talle[]
+  items       OrdenItem[]
+  createdAt   DateTime    @default(now())
+}
+
+model Talle {
+  id         Int      @id @default(autoincrement())
+  nombre     String
+  stock      Int      @default(0)
+  productoId Int
+  producto   Producto @relation(fields: [productoId], references: [id])
+}
+
+model Orden {
+  id        Int         @id @default(autoincrement())
+  estado    EstadoOrden @default(PENDIENTE)
+  total     Float
+  usuarioId Int
+  usuario   Usuario     @relation(fields: [usuarioId], references: [id])
+  items     OrdenItem[]
+  createdAt DateTime    @default(now())
+}
+
+enum EstadoOrden {
+  PENDIENTE
+  PAGADO
+  ENVIADO
+  ENTREGADO
+  CANCELADO
+}
+
+model OrdenItem {
+  id         Int      @id @default(autoincrement())
+  cantidad   Int
+  precio     Float
+  talle      String
+  productoId Int
+  producto   Producto @relation(fields: [productoId], references: [id])
+  ordenId    Int
+  orden      Orden    @relation(fields: [ordenId], references: [id])
+}
