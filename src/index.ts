@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import productosRoutes from "./routes/productos";
+import categoriasRoutes from "./routes/categorias";
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ app.get("/", (req, res) => {
 
 // Rutas
 app.use("/api/productos", productosRoutes);
+app.use("/api/categorias", categoriasRoutes);
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo correctamente en http://localhost:${PORT}`);
