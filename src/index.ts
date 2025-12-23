@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import productosRoutes from "./routes/productos";
 import categoriasRoutes from "./routes/categorias";
+import authRouter from "./routes/auth.routes";
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.get("/", (req, res) => {
 // Rutas
 app.use("/api/productos", productosRoutes);
 app.use("/api/categorias", categoriasRoutes);
+app.use("/api/auth" , authRouter);
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo correctamente en http://localhost:${PORT}`);
