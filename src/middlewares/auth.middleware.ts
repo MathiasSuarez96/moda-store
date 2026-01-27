@@ -1,7 +1,10 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
+import { PrismaClient } from "@prisma/client";
 
-export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+const prisma = new PrismaClient(); 
+
+export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const authHeader = req.headers.authorization;
     
@@ -17,7 +20,21 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
     
     const token = parts[1];
     
-    const decoded = jwt.verify(token, "secreto123") as { id: number; email: string };
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: number; email: string }; 
+
+    const usuario = await prisma.usuario.findUnique({
+      where: {id: decoded.id}
+    });
+    
+    if(!usuario) {
+      return res.status(401).json({error: "Usuario no encontrado"}); 
+    }
+    
+    req.user = {
+      id: usuario.id,
+      email: usuario.email,
+      rol: usuario.rol
+    };
     
     next();
     

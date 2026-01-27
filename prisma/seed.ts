@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
@@ -143,12 +144,16 @@ async function main() {
 
   console.log("👕 Productos creados:", productos.length);
 
-  // Crear usuarios (password sin encriptar por ahora, después agregamos bcrypt)
+  // Encriptar contraseñas ANTES de crear usuarios
+  const adminPassword = await bcrypt.hash("123456", 10);
+  const clientePassword = await bcrypt.hash("123456", 10);
+
+  // Crear usuarios con contraseñas encriptadas
   const usuarios = await Promise.all([
     prisma.usuario.create({
       data: {
         email: "admin@ecommerce.com",
-        password: "123456",
+        password: adminPassword,
         nombre: "Admin",
         rol: "ADMIN",
       },
@@ -156,7 +161,7 @@ async function main() {
     prisma.usuario.create({
       data: {
         email: "cliente@gmail.com",
-        password: "123456",
+        password: clientePassword,
         nombre: "Juan Pérez",
         rol: "CLIENTE",
       },
