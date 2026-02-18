@@ -73,6 +73,7 @@ authRouter.post("/login", async (req: Request, res: Response) => {
       token
     });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: "Error al iniciar sesión" });
   }
 });

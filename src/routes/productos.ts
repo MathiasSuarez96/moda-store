@@ -97,4 +97,66 @@ router.post(
   }
 );
 
+//Actualizar producto
+router.put("/:id", authMiddleware, isAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { nombre, descripcion, precio, imagen, stock, categoriaId } = req.body;
+
+        // Verificar que el producto existe
+        const productoExiste = await prisma.producto.findUnique({
+            where: { id: Number(id) },
+        });
+
+        if (!productoExiste) {
+            return res.status(404).json({ error: "Producto no encontrado" });
+        }
+
+        // Actualizar el producto
+        const productoActualizado = await prisma.producto.update({
+            where: { id: Number(id) },
+            data: {
+                nombre,
+                descripcion,
+                precio,
+                imagen,
+                stock,
+                categoriaId,
+            },
+        });
+
+        res.json(productoActualizado);
+    } catch (error) {
+        res.status(500).json({ error: "Error al actualizar el producto" });
+    }
+});
+//Eliminar producto
+
+router.delete("/:id", authMiddleware, isAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const productoExiste = await prisma.producto.findUnique({
+            where: { id: Number(id) },
+        });
+        if (!productoExiste) {
+            return res.status(404).json({ error: "Producto no encontrado" });
+        }
+
+        // Primero eliminar los talles asociados
+        await prisma.talle.deleteMany({
+            where: { productoId: Number(id) },
+        });
+
+        // Después eliminar el producto
+        await prisma.producto.delete({
+            where: { id: Number(id) },
+        });
+        
+        res.json({ message: "Producto eliminado correctamente" });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Error al eliminar el producto" });
+    }
+});
+
 export default router;
