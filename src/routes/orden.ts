@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { validate } from "../middlewares/validate";
 import { crearOrdenSchema, CrearOrden } from "../schema/orden.schema";
+import { isAdmin } from "../middlewares/isAdmin.middleware";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -52,6 +53,68 @@ router.post("/", authMiddleware, validate(crearOrdenSchema), async (req, res) =>
 
     } catch (error) {
         res.status(500).json({ error: "Error al crear la orden" });
+    }
+});
+
+//Conseguir tus ordenes vs verlas todas admin
+
+router.get("/", authMiddleware, async (req, res) => {
+    try {
+        let ordenes
+
+        if (req.user!.rol === "ADMIN") {
+            ordenes = await prisma.orden.findMany()
+        } else {
+            ordenes = await prisma.orden.findMany({ where: { usuarioId: req.user!.id } })
+        }
+        
+        res.json(ordenes)
+    } catch (error) {
+        res.status(500).json({ error: "Error al obtener órdenes" })
+    }
+});
+
+//Actualizar estado de ordenes
+
+router.put("/:id" , isAdmin , async (req ,res) => {
+    try {
+        const {id} = req.params;
+        const { estado } = req.body;
+
+        const estadoActualizado = await prisma.orden.update({
+            where: {id: Number(id) },
+            data : {estado},
+        });
+        res.json(estadoActualizado);
+
+    } catch (error) {
+        res.status(500).json({error: "Error al actualizar el estado de la orden"});
+    }
+ 
+});
+
+//Eliminar una orden
+router.delete("/:id", isAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        const ordenExiste = await prisma.orden.findUnique({
+            where: { id: Number(id) },
+        });
+        
+        if (!ordenExiste) {
+            return res.status(404).json({ error: "Orden no encontrada" });
+        }
+        
+        await prisma.orden.delete({
+            where: { id: Number(id) },
+        });
+        
+        res.json({ message: "Orden eliminada correctamente" });
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Error al eliminar la orden" });
     }
 });
 
