@@ -76,7 +76,7 @@ router.get("/", authMiddleware, async (req, res) => {
 
 //Actualizar estado de ordenes
 
-router.put("/:id" , isAdmin , async (req ,res) => {
+router.put("/:id", authMiddleware, isAdmin, async (req, res) => {
     try {
         const {id} = req.params;
         const { estado } = req.body;
@@ -94,7 +94,7 @@ router.put("/:id" , isAdmin , async (req ,res) => {
 });
 
 //Eliminar una orden
-router.delete("/:id", isAdmin, async (req, res) => {
+router.delete("/:id", authMiddleware, isAdmin, async (req, res) => {
     try {
         const { id } = req.params;
         

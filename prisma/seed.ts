@@ -33,7 +33,7 @@ async function main() {
       data: {
         nombre: "Remera Básica Negra",
         descripcion: "Remera de algodón 100%, corte regular",
-        precio: 15000,
+        precio: 890,
         imagen: "https://via.placeholder.com/400x400?text=Remera+Negra",
         stock: 50,
         categoriaId: categorias[0].id,
@@ -51,7 +51,7 @@ async function main() {
       data: {
         nombre: "Remera Estampada Urban",
         descripcion: "Remera con estampado urbano, algodón premium",
-        precio: 22000,
+        precio: 1290,
         imagen: "https://via.placeholder.com/400x400?text=Remera+Urban",
         stock: 35,
         categoriaId: categorias[0].id,
@@ -70,7 +70,7 @@ async function main() {
       data: {
         nombre: "Jean Slim Fit Azul",
         descripcion: "Jean elastizado, corte slim fit",
-        precio: 45000,
+        precio: 2690,
         imagen: "https://via.placeholder.com/400x400?text=Jean+Azul",
         stock: 30,
         categoriaId: categorias[1].id,
@@ -88,7 +88,7 @@ async function main() {
       data: {
         nombre: "Jogger Negro",
         descripcion: "Pantalón jogger de frisa, ideal para el día a día",
-        precio: 32000,
+        precio: 1890,
         imagen: "https://via.placeholder.com/400x400?text=Jogger+Negro",
         stock: 40,
         categoriaId: categorias[1].id,
@@ -107,7 +107,7 @@ async function main() {
       data: {
         nombre: "Buzo Oversize Gris",
         descripcion: "Buzo de frisa oversize, capucha y bolsillo canguro",
-        precio: 38000,
+        precio: 2290,
         imagen: "https://via.placeholder.com/400x400?text=Buzo+Gris",
         stock: 25,
         categoriaId: categorias[2].id,
@@ -125,7 +125,7 @@ async function main() {
       data: {
         nombre: "Zapatillas Urban Blancas",
         descripcion: "Zapatillas urbanas, suela de goma, muy cómodas",
-        precio: 65000,
+        precio: 3890,
         imagen: "https://via.placeholder.com/400x400?text=Zapatillas+Blancas",
         stock: 20,
         categoriaId: categorias[3].id,
@@ -174,19 +174,19 @@ async function main() {
   const orden = await prisma.orden.create({
     data: {
       estado: "PAGADO",
-      total: 60000,
+      total: 3670,
       usuarioId: usuarios[1].id,
       items: {
         create: [
           {
             cantidad: 2,
-            precio: 15000,
+            precio: 890,
             talle: "M",
             productoId: productos[0].id,
           },
           {
             cantidad: 1,
-            precio: 32000,
+            precio: 1890,
             talle: "L",
             productoId: productos[3].id,
           },

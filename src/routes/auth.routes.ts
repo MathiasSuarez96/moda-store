@@ -2,6 +2,7 @@ import { Router, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { authMiddleware } from "../middlewares/auth.middleware";
 
 const authRouter = Router();
 const prisma = new PrismaClient();
@@ -75,6 +76,21 @@ authRouter.post("/login", async (req: Request, res: Response) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Error al iniciar sesión" });
+  }
+});
+
+authRouter.get("/me", authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const usuario = await prisma.usuario.findUnique({
+      where: { id: req.user!.id },
+      select: { id: true, nombre: true, email: true, rol: true },
+    });
+    if (!usuario) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+    res.json(usuario);
+  } catch (error) {
+    res.status(500).json({ error: "Error al obtener perfil" });
   }
 });
 

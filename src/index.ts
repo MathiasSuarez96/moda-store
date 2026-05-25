@@ -5,6 +5,7 @@ import productosRoutes from "./routes/productos";
 import categoriasRoutes from "./routes/categorias";
 import authRouter from "./routes/auth.routes";
 import ordenRouter from "./routes/orden";
+import uploadsRouter from "./routes/uploads";
 dotenv.config();
 
 const app = express();
@@ -21,7 +22,8 @@ app.get("/", (req, res) => {
 app.use("/api/productos", productosRoutes);
 app.use("/api/categorias", categoriasRoutes);
 app.use("/api/auth" , authRouter);
-app.use("/api/ordenes" , ordenRouter);
+app.use("/api/ordenes", ordenRouter);
+app.use("/api/uploads", uploadsRouter);
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo correctamente en http://localhost:${PORT}`);
