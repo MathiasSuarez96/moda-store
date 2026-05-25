@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { authMiddleware } from "../middlewares/auth.middleware";
+import { sendWelcomeEmail } from "../lib/resend";
 
 const authRouter = Router();
 const prisma = new PrismaClient();
@@ -30,6 +31,9 @@ authRouter.post("/register", async (req: Request, res: Response) => {
         password: hashedPassword
       }
     });
+
+    // Fire-and-forget: no bloquea la respuesta si el email falla
+    sendWelcomeEmail(usuario.nombre, usuario.email).catch(console.error);
 
     res.status(201).json({
       message: "Usuario registrado",

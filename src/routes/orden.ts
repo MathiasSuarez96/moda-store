@@ -4,6 +4,7 @@ import { authMiddleware } from "../middlewares/auth.middleware";
 import { validate } from "../middlewares/validate";
 import { crearOrdenSchema, CrearOrden } from "../schema/orden.schema";
 import { isAdmin } from "../middlewares/isAdmin.middleware";
+import { sendOrderConfirmationEmail } from "../lib/resend";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -48,6 +49,18 @@ router.post("/", authMiddleware, validate(crearOrdenSchema), async (req, res) =>
                 }
             }
         });
+
+        // Fire-and-forget: enviar email de confirmación sin bloquear la respuesta
+        prisma.usuario.findUnique({ where: { id: usuarioId }, select: { nombre: true, email: true } })
+            .then(usuario => {
+                if (!usuario) return;
+                const emailItems = itemsConPrecio.map(item => {
+                    const prod = productosExist.find(p => p.id === item.productoId)!;
+                    return { nombre: prod.nombre, talle: item.talle, cantidad: item.cantidad, precio: prod.precio };
+                });
+                return sendOrderConfirmationEmail(usuario.nombre, usuario.email, orden.id, total, emailItems);
+            })
+            .catch(console.error);
 
         res.status(201).json(orden);
 
